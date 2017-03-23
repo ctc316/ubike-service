@@ -1,0 +1,13 @@
+version: '3'
+services:
+  api:
+    container_name: ubike-service
+    build: .
+    environment:
+      - PORT=8080
+      - NODE_ENV=production
+    command: node app.js
+    ports:
+     - 8080:8080
+    volumes:
+     - .:/srv/ubike-service

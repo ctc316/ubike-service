@@ -1,0 +1,24 @@
+{
+  "name": "ubike-service",
+  "version": "1.0.0",
+  "description": "A application server for Taipei Youbike related service.",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node app.js"
+  },
+  "keywords": [
+    "koa",
+    "nodejs",
+    "youbike"
+  ],
+  "author": "ctc316",
+  "license": "ISC",
+  "dependencies": {
+    "koa": "^2.2.0",
+    "koa-bodyparser": "^4.1.0",
+    "koa-router": "^7.0.0",
+    "koa-swagger": "^0.3.0",
+    "lodash": "^4.17.4"
+  }
+}
