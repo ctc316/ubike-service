@@ -26,8 +26,10 @@ RUN	curl -o- https://raw.githubusercontent.com/creationix/nvm/v$NVM_VERSION/inst
 	&& nvm use $NODE_VERSION 	\
 	&& nvm alias default $NODE_VERSION
 
-ENV PATH      $NVM_DIR/versions/node/v$NODE_VERSION/bin:$PATH
+ENV PATH  $NVM_DIR/versions/node/v$NODE_VERSION/bin:$PATH
 
+# Gulp
+RUN npm install --global gulp-cli
 
 # Build image
 WORKDIR /srv/ubike-service

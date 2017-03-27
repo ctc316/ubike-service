@@ -1,0 +1,30 @@
+---
+swagger: '2.0'
+info:
+  version: 1.0.0
+  title: ubike-service
+  description: |
+    #### A application server for Taipei Youbike related service.
+schemes:
+  - http
+host: localhost:3000
+basePath: /
+paths:
+  /v1:
+    get:
+      responses:
+        200:
+          description: Echo GET
+    post:
+      responses:
+        200:
+          description: Echo POST
+      parameters:
+        - name: name
+          in: formData
+          description: name
+          type: string
+        - name: message
+          in: formData
+          description: message
+          type: string

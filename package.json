@@ -13,12 +13,19 @@
     "youbike"
   ],
   "author": "ctc316",
-  "license": "ISC",
+  "license": "MIT",
   "dependencies": {
+    "kcors": "^2.2.1",
     "koa": "^2.2.0",
     "koa-bodyparser": "^4.1.0",
+    "koa-helmet": "^3.1.0",
     "koa-router": "^7.0.0",
-    "koa-swagger": "^0.3.0",
-    "lodash": "^4.17.4"
+    "koa-static": "^3.0.0",
+    "lodash": "^4.17.4",
+    "swagger2-koa": "0.0.35"
+  },
+  "devDependencies": {
+    "gulp": "^3.9.1",
+    "swagger-ui": "^3.0.3"
   }
 }
