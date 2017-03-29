@@ -4,27 +4,54 @@ info:
   version: 1.0.0
   title: ubike-service
   description: |
-    #### A application server for Taipei Youbike related service.
+    #### An application server for Taipei YouBike related service.
 schemes:
   - http
 host: localhost:3000
-basePath: /
+# basePath: "/"
 paths:
-  /v1:
+  /v1/ubike-station/taipei:
     get:
-      responses:
-        200:
-          description: Echo GET
-    post:
-      responses:
-        200:
-          description: Echo POST
+      tags:
+        - v1
+      summary: Find 2 nearest ubike station
+      description: Return a list of 2 nearest ubike station based on latitude and longitude in request parameters.
+      operationId: find2Nearest
       parameters:
-        - name: name
-          in: formData
-          description: name
-          type: string
-        - name: message
-          in: formData
-          description: message
-          type: string
+        - in: query
+          name: lat
+          description: latitude
+          required: true
+          type: number
+        - in: query
+          name: lng
+          description: longitude
+          required: true
+          type: number
+      responses:
+        200:
+          description: Success
+          schema:
+            type: object
+            properties:
+              code:
+                type: integer
+                description: "<br>1: all ubike stations are full<br> 0: OK<br> -1: invalid latitude or longitud<br> -2: given location not in Taipei City<br> -3: system error"
+                example: 0
+              result:
+                description: "<br>exceptions: <br>1. empty while code is not zero.<br> 2. skip stations with no ubike left."
+                type: array
+                items:
+                  type: object
+                  properties:
+                    station:
+                      type: string
+                    num_ubike:
+                      type: integer
+                example:
+                  - station: 捷運象山站
+                    num_ubike: 10
+                  - station: 世貿二館
+                    num_ubike: 33
+      produces:
+        - application/json
