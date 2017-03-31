@@ -3,10 +3,12 @@ const _ = require('lodash')
 
 const PATH_ENV = path.resolve(__dirname, "env")
 const PATH_ROUTES = path.resolve(__dirname, "routes")
+const PATH_CONTROLLERS = path.resolve(__dirname, "../api/controllers")
 
 var config = {
     env: process.env.NODE_ENV || "development",
     path: {
+		controllers: PATH_CONTROLLERS,
 		routes: PATH_ROUTES
 	}
 };

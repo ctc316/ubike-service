@@ -22,7 +22,7 @@ gulp.task('server', function() {
  */
 gulp.task('default', function() {
   gulp.run('server')
-  gulp.watch(['./app.js', 'api/**/*.js', 'config/**/*.js', 'swagger.yml'], function() {
+  gulp.watch(['./app.js', 'api/**/**.js', 'config/**/**.js', 'swagger.yml'], function() {
     gulp.run('server')
   })
 })

@@ -8,7 +8,7 @@ info:
 schemes:
   - http
 host: localhost:3000
-# basePath: "/"
+basePath: "/"
 paths:
   /v1/ubike-station/taipei:
     get:

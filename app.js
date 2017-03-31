@@ -1,5 +1,6 @@
-const fs = require('fs')
 const path = require('path')
+const glob = require("glob")
+const _ = require("lodash")
 
 const Koa = require('koa')
 const Router = require('koa-router')
@@ -15,10 +16,7 @@ const swagger_ui = require('swagger2-koa').ui
 const package = require(path.join(__dirname, "package.json"))
 const config = require(path.join(__dirname, "config"))
 
-let app = new Koa()
-
-//Body parser
-app.use(body())
+var app = new Koa()
 
 //CORS
 app.use(cors())
@@ -26,13 +24,8 @@ app.use(cors())
 //Security
 app.use(helmet())
 
-//Log
-app.use(async (ctx, next) => {
-	const start = new Date()
-	await next()
-	const ms = new Date() - start
-	console.log(`${ctx.request.ip} -> ${ctx.method} ${ctx.url} - ${ms}ms`)
-})
+//Body Parser
+app.use(body())
 
 // Swagger - UI
 const document = swagger.loadDocumentSync(__dirname + '/swagger.yml')
@@ -44,20 +37,39 @@ if (!swagger.validateDocument(document)) {
 }
 app.use(swagger_validate(document))
 
+//Log
+app.use(async (ctx, next) => {
+	const start = new Date()
+	await next()
+	const ms = new Date() - start
+	console.log(`${ctx.request.ip} -> ${ctx.method} ${ctx.url} - ${ms}ms`)
+})
+
+// Load Controllers
+var controllers = {}
+var ctrlFiles = glob.sync(config.path.controllers + "/**/**.js", null)
+ctrlFiles.forEach((f) => {
+	var paths = f.replace(config.path.controllers + "/", "").replace(".js","").split("/")
+	var	idx = paths.length-1, obj = {}
+	obj[paths[idx--]] = require(f)
+	while(idx >= 0) {
+		var tmp = obj
+		obj = {}
+		obj[paths[idx--]] = tmp
+	}
+	_.merge(controllers, obj)
+})
 
 // Config Routes
-fs.readdir(config.path.routes, (err, files) => {
-		files
-		.filter(f => { return !f.startsWith(".") })
-		.forEach(f => {
-				require(path.join(config.path.routes,f))(app)
-		});
-})
+var routesFiles = glob.sync(config.path.routes + "/**/**.js", null)
+routesFiles.forEach(f => {
+	require(f)(app,controllers)
+});
+
 
 // Listening
 app.listen(config.port, () => {
 		console.log(`[ ${package.name} v${package.version} ] started, listening on port ${config.port}...", `)
 		console.info(config)
 })
-
 
