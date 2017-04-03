@@ -1,8 +1,8 @@
 /*
- *   v1/ubikeStation
+ *   v1/UbikeStation
  */
 
-exports.find2Nearest = function (ctx, next){
+module.exports.find2Nearest = function (ctx, next){
     ctx.body = {
       code: 0,
       result:[

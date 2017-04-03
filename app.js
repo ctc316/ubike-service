@@ -15,6 +15,7 @@ const swagger_ui = require('swagger2-koa').ui
 
 const package = require(path.join(__dirname, "package.json"))
 const config = require(path.join(__dirname, "config"))
+const bootstrap = require(path.join(__dirname, "config/bootstrap.js"))
 
 var app = new Koa()
 
@@ -43,33 +44,53 @@ app.use(async (ctx, next) => {
 	await next()
 	const ms = new Date() - start
 	console.log(`${ctx.request.ip} -> ${ctx.method} ${ctx.url} - ${ms}ms`)
-})
-
-// Load Controllers
-var controllers = {}
-var ctrlFiles = glob.sync(config.path.controllers + "/**/**.js", null)
-ctrlFiles.forEach((f) => {
-	var paths = f.replace(config.path.controllers + "/", "").replace(".js","").split("/")
-	var	idx = paths.length-1, obj = {}
-	obj[paths[idx--]] = require(f)
-	while(idx >= 0) {
-		var tmp = obj
-		obj = {}
-		obj[paths[idx--]] = tmp
-	}
-	_.merge(controllers, obj)
-})
-
-// Config Routes
-var routesFiles = glob.sync(config.path.routes + "/**/**.js", null)
-routesFiles.forEach(f => {
-	require(f)(app,controllers)
 });
 
+
+function loadJSExposes(target, filePath) {
+	var files = glob.sync(filePath + "/**/**.js", null)
+	files.forEach((f) => {
+		var paths = f.replace(filePath + "/", "").replace(".js","").split("/")
+		var	idx = paths.length-1, obj = {}
+		obj[paths[idx--]] = require(f)
+		while(idx >= 0) {
+			var tmp = obj
+			obj = {}
+			obj[paths[idx--]] = tmp
+		}
+		_.merge(target, obj)
+	})
+}
+
+// Load Controllers & Config Routes
+(function(app, config){
+	var controllers = {}
+	loadJSExposes(controllers, config.path.controllers)
+	var routesFiles = glob.sync(config.path.routes + "/**/**.js", null)
+	routesFiles.forEach(f => {
+		require(f)(app, controllers)
+	})
+})(app, config);
+
+// Load Services and Expose to global
+(function(app, config){
+	var services = {}
+	loadJSExposes(services, config.path.services)
+	for(var idx in services){
+		if(!global.hasOwnProperty(idx))
+			global[idx] = services[idx]
+	}
+})(app, config);
+
+// Run bootstrap
+bootstrap()
 
 // Listening
 app.listen(config.port, () => {
 		console.log(`[ ${package.name} v${package.version} ] started, listening on port ${config.port}...", `)
 		console.info(config)
 })
+
+
+
 
