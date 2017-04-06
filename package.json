@@ -3,26 +3,35 @@
   "version": "1.0.0",
   "description": "An application server for Taipei YouBike related service.",
   "main": "app.js",
+  "engines": {
+    "node": "7.7.3"
+  },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node app.js"
   },
   "keywords": [
-    "koa",
+    "koa2",
     "nodejs",
-    "youbike"
+    "youbike",
+    "taipei city"
   ],
   "author": "ctc316",
   "license": "MIT",
   "dependencies": {
+    "ajv": "^4.11.5",
+    "geolib": "^2.0.22",
     "glob": "^7.1.1",
+    "json-query": "^2.2.0",
     "kcors": "^2.2.1",
     "koa": "^2.2.0",
     "koa-body": "^2.0.0",
     "koa-helmet": "^3.1.0",
+    "koa-logger": "^2.0.1",
     "koa-router": "^7.0.0",
-    "koa-static": "^3.0.0",
     "lodash": "^4.17.4",
+    "request": "^2.81.0",
+    "request-promise-native": "^1.0.3",
     "swagger2-koa": "^0.0.36"
   },
   "devDependencies": {

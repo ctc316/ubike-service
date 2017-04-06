@@ -1,5 +1,17 @@
 /*
  *   UbikeDataService
+ */
+
+const request = require('request-promise-native')
+const _ = require('lodash')
+const Ajv = require('ajv');
+
+const YOUBIKE_DATA_URL = "http://data.taipei/youbike"
+
+/*
+ *	Since Youbike data is few and should be updated frequently,
+ *  simply store it in memory through global encapsulation
+ *	Data Definitions
  *		sno：站點代號
  * 		sna：場站名稱(中文)
  *		tot：場站總停車格
@@ -15,32 +27,104 @@
  *		bemp：空位數量
  *		act：全站禁用狀態
  */
+let ubikeData = {}
 
-const request = require('request');
-const YOUBIKE_DATA_URL = "http://data.taipei/youbike"
+/*
+ * data validator
+ */
+let ajv = new Ajv({ coerceTypes: true });
+let uBikeDataSchema = {
+	"type": "object",
+	"patternProperties": {
+		'.*': {
+			"type": "object" ,
+			"properties": {
+				"sno": 		{ "type": "string" },
+				"sna": 		{ "type": "string" },
+				"tot": 		{ "type": "integer" },
+				"sbi": 		{ "type": "integer" },
+				"sarea": 	{ "type": "string" },
+				"mday": 	{ "type": "integer" },
+				"lat": 		{ "type": "number" },
+				"lng": 		{ "type": "number" },
+				"ar": 		{ "type": "string" },
+				"sareaen": 	{ "type": "string" },
+				"snaen": 	{ "type": "string" },
+				"snaen": 	{ "type": "string" },
+				"aren": 	{ "type": "string" },
+				"bemp": 	{ "type": "integer" },
+				"act": 		{ "type": "integer" },
+			},
+			"additionalProperties": false,
+		},
+	},
+	"additionalProperties": false,
+};
+let validate = ajv.compile(uBikeDataSchema);
 
-function requestUbikeData(callback){
-    request({
-		method: 'GET',
-		uri: YOUBIKE_DATA_URL,
-		gzip: true
-    }, function (err, res, body) {
-    	if(err) return callback(err)
-    	try {
-    		var json;
-	   		json = JSON.parse(body);
-	    } catch (e) {
-	   		callback(e)
-	    }finally {
-	    	callback(null, json)
-	    }
-    })
+
+async function requestUbikeData(){
+	try {
+		const resp = await request({
+			method: 'GET',
+			uri: YOUBIKE_DATA_URL,
+			gzip: true,
+			json: true
+		})
+		return resp
+	} catch (err){
+		throw err
+	}
 }
 
-module.exports.updateToLatest = function(callback){
-    console.log("updateToLatest")
-    requestUbikeData(function(err, data){
-    	if(err) return callback(err)
-    	console.log(data)
-    })
+module.exports.updateToLatest = async () => {
+	try {
+		let resp = await requestUbikeData()
+		let val = resp.retVal
+		if (!validate(val)) {
+			throw(new Error("Ubike Data Validation Fail."))
+		}
+		ubikeData = val
+		let size = Object.keys(ubikeData).length;
+		let updateTime = ubikeData['0001']['mday']
+		console.log(`YouBike Data Updated -> Code=${resp.retCode}, Total=${size}, UpdateTime=${updateTime}`)
+	} catch (err) {
+		throw err
+	}
 }
+
+
+/*
+validation for location 25.034153, 121.568509
+{
+	{
+      "station": "興雅國中",
+      "distance": 268m
+    },
+    {
+      "station": "世貿二館",
+      "distance": 295m
+    },
+    {
+      "station": "捷運象山站",
+      "distance": 315m
+    }
+}
+*/
+module.exports.find2Nearest = (lat, lng) => {
+	let result = _.sortBy(ubikeData, [function(obj) {
+		return GeoDataService.getDistance(lat, lng, obj.lat, obj.lng)
+	}]);
+
+	let retVal = []
+	for(let i=0; retVal.length<2 && i<result.length; i++) {
+		if(result[i].bemp == 0) continue
+		retVal.push({
+			"station": result[i].sna,
+			"num_ubike": result[i].bemp
+		})
+	}
+	return retVal
+}
+
+

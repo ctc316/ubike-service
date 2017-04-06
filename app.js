@@ -1,6 +1,4 @@
 const path = require('path')
-const glob = require("glob")
-const _ = require("lodash")
 
 const Koa = require('koa')
 const Router = require('koa-router')
@@ -38,7 +36,7 @@ if (!swagger.validateDocument(document)) {
 }
 app.use(swagger_validate(document))
 
-//Log
+//Simple Log
 app.use(async (ctx, next) => {
 	const start = new Date()
 	await next()
@@ -46,50 +44,34 @@ app.use(async (ctx, next) => {
 	console.log(`${ctx.request.ip} -> ${ctx.method} ${ctx.url} - ${ms}ms`)
 });
 
+//Default Error Handler
+app.use(async (ctx, next) => {
+	try {
+		await next();
+	} catch (err) {
+		ctx.status = err.statusCode || err.status || 500;
+		ctx.body = {
+			message: err.message
+		};
+	}
+});
 
-function loadJSExposes(target, filePath) {
-	var files = glob.sync(filePath + "/**/**.js", null)
-	files.forEach((f) => {
-		var paths = f.replace(filePath + "/", "").replace(".js","").split("/")
-		var	idx = paths.length-1, obj = {}
-		obj[paths[idx--]] = require(f)
-		while(idx >= 0) {
-			var tmp = obj
-			obj = {}
-			obj[paths[idx--]] = tmp
-		}
-		_.merge(target, obj)
-	})
-}
-
-// Load Controllers & Config Routes
-(function(app, config){
-	var controllers = {}
-	loadJSExposes(controllers, config.path.controllers)
-	var routesFiles = glob.sync(config.path.routes + "/**/**.js", null)
-	routesFiles.forEach(f => {
-		require(f)(app, controllers)
-	})
-})(app, config);
-
-// Load Services and Expose to global
-(function(app, config){
-	var services = {}
-	loadJSExposes(services, config.path.services)
-	for(var idx in services){
-		if(!global.hasOwnProperty(idx))
-			global[idx] = services[idx]
+// Run bootstrap
+(async (app, config) => {
+	try {
+		await bootstrap(app, config)
+		// Start Listening
+		app.listen(config.port, () => {
+				console.info(`Server "${package.name} v${package.version}" started, listening on port ${config.port}...`)
+				// console.info(config)
+		})
+	} catch(err) {
+		console.error(err)
+		process.exit(1)
 	}
 })(app, config);
 
-// Run bootstrap
-bootstrap()
 
-// Listening
-app.listen(config.port, () => {
-		console.log(`[ ${package.name} v${package.version} ] started, listening on port ${config.port}...", `)
-		console.info(config)
-})
 
 
 

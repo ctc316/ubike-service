@@ -12,7 +12,8 @@ var config = {
 		controllers: PATH_CONTROLLERS,
 		services: PATH_SERVICES,
 		routes: PATH_ROUTES
-	}
+	},
+	ubikePollingIntv: 5 * 60000  //update interval: 1 min on ubike data specification, actually is 5 mins
 };
 
 if(config.env === 'development' || config.env === 'production'){
