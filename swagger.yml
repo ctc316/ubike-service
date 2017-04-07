@@ -5,9 +5,6 @@ info:
   title: ubike-service
   description: |
     #### An application server for Taipei YouBike related service.
-schemes:
-  - http
-host: localhost:3000
 basePath: "/"
 paths:
   /v1/ubike-station/taipei:
@@ -53,9 +50,9 @@ paths:
                     num_ubike:
                       type: integer
                 example:
-                  - station: 興雅國中
-                    num_ubike: 26
+                  - station: 捷運象山站
+                    num_ubike: 10
                   - station: 世貿二館
-                    num_ubike: 28
+                    num_ubike: 33
       produces:
         - application/json
