@@ -10,7 +10,7 @@ module.exports = function(app, controllers){
 
 	app.use(v1.routes())
 	app.use(v1.allowedMethods())
-};
+}
 
 
 

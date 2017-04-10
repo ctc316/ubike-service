@@ -14,10 +14,10 @@ var config = {
 		routes: PATH_ROUTES
 	},
 	ubikePollingIntv: 5 * 60000  //update interval: 1 min on ubike data specification, actually is 5 mins
-};
+}
 
 if(config.env === 'development' || config.env === 'production'){
     config = _.extend(config, require(path.resolve(PATH_ENV, config.env)))
 }
 
-module.exports = config;
+module.exports = config

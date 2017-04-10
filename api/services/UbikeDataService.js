@@ -4,7 +4,7 @@
 
 const request = require('request-promise-native')
 const _ = require('lodash')
-const Ajv = require('ajv');
+const Ajv = require('ajv')
 
 const YOUBIKE_DATA_URL = "http://data.taipei/youbike"
 
@@ -32,7 +32,7 @@ let ubikeData = {}
 /*
  * data validator
  */
-let ajv = new Ajv({ coerceTypes: true });
+let ajv = new Ajv({ coerceTypes: true })
 let uBikeDataSchema = {
 	"type": "object",
 	"patternProperties": {
@@ -59,8 +59,8 @@ let uBikeDataSchema = {
 		},
 	},
 	"additionalProperties": false,
-};
-let validate = ajv.compile(uBikeDataSchema);
+}
+let validate = ajv.compile(uBikeDataSchema)
 
 
 async function requestUbikeData(){
@@ -85,7 +85,7 @@ module.exports.updateToLatest = async () => {
 			throw(new Error("Ubike Data Validation Fail."))
 		}
 		ubikeData = val
-		let size = Object.keys(ubikeData).length;
+		let size = Object.keys(ubikeData).length
 		let updateTime = ubikeData['0001']['mday']
 		console.log(`YouBike Data Updated -> Code=${resp.retCode}, Total=${size}, UpdateTime=${updateTime}`)
 	} catch (err) {
@@ -114,7 +114,7 @@ validation for location 25.034153, 121.568509
 module.exports.find2Nearest = (lat, lng) => {
 	let result = _.sortBy(ubikeData, [function(obj) {
 		return GeoDataService.getDistance(lat, lng, obj.lat, obj.lng)
-	}]);
+	}])
 
 	let retVal = []
 	for(let i=0; retVal.length<2 && i<result.length; i++) {

@@ -7,8 +7,8 @@ const helmet = require('koa-helmet')
 const cors = require('kcors')
 
 const swagger = require('swagger2')
-const swagger_router = require('swagger2-koa').router;
-const swagger_validate = require('swagger2-koa').validate;
+const swagger_router = require('swagger2-koa').router
+const swagger_validate = require('swagger2-koa').validate
 const swagger_ui = require('swagger2-koa').ui
 
 const package = require(path.join(__dirname, "package.json"))
@@ -42,17 +42,18 @@ app.use(async (ctx, next) => {
 	await next()
 	const ms = new Date() - start
 	console.log(`${ctx.request.ip} -> ${ctx.method} ${ctx.url} - ${ms}ms`)
-});
+})
 
-//Default Error Handler
+//Error Handler
 app.use(async (ctx, next) => {
 	try {
-		await next();
+		await next()
 	} catch (err) {
-		ctx.status = err.statusCode || err.status || 500;
-		ctx.body = {
-			message: err.message
-		};
+		ctx.status = err.statusCode || err.status || 500
+		console.log(`Error Response: Code=${ctx.status}, Message=${err.message}`)
+		if(ctx.status == 500) {
+			console.error(err)
+		}
 	}
 });
 
@@ -63,13 +64,12 @@ app.use(async (ctx, next) => {
 		// Start Listening
 		app.listen(config.port, () => {
 				console.info(`Server "${package.name} v${package.version}" started, listening on port ${config.port}...`)
-				// console.info(config)
 		})
 	} catch(err) {
 		console.error(err)
 		process.exit(1)
 	}
-})(app, config);
+})(app, config)
 
 
 

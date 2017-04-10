@@ -54,5 +54,7 @@ paths:
                     num_ubike: 10
                   - station: 世貿二館
                     num_ubike: 33
+        500:
+          description: Server Internal Error
       produces:
         - application/json
