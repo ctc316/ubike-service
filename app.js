@@ -57,19 +57,24 @@ app.use(async (ctx, next) => {
 	}
 });
 
-// Run bootstrap
-(async (app, config) => {
+//Start Server
+var serve = async () => {
 	try {
 		await bootstrap(app, config)
-		// Start Listening
-		app.listen(config.port, () => {
-				console.info(`Server "${package.name} v${package.version}" started, listening on port ${config.port}...`)
+		return app.listen(config.port, () => {
+			console.log(config)
+			console.info(`Server "${package.name} v${package.version}" started, listening on port ${config.port}...`)
 		})
 	} catch(err) {
 		console.error(err)
 		process.exit(1)
 	}
-})(app, config)
+}
+if(config.env == 'test') {
+	module.exports = serve
+} else {
+	serve()
+}
 
 
 

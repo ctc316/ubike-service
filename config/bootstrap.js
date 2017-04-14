@@ -6,7 +6,7 @@ const glob = require("glob")
 const _ = require("lodash")
 
 function loadJSExposes(target, filePath) {
-	var files = glob.sync(filePath + "/**/**.js", null)
+	var files = glob.sync(filePath + "/**/**.js", {ignore: "/**/**.spec.js"})
 	files.forEach((f) => {
 		var paths = f.replace(filePath + "/", "").replace(".js","").split("/")
 		var	idx = paths.length-1, obj = {}
@@ -26,7 +26,7 @@ module.exports = async (app, config) => {
 	// Load Controllers & Config Routes
 	let controllers = {}
 	loadJSExposes(controllers, config.path.controllers)
-	let routesFiles = glob.sync(config.path.routes + "/**/**.js", null)
+	let routesFiles = glob.sync(config.path.routes + "/**/**.js", {ignore: "/**/**.spec.js"})
 	routesFiles.forEach(f => {
 		require(f)(app, controllers)
 	})
