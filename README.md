@@ -12,6 +12,7 @@ An application server based on real-time open data of Taipei YouBike.
 * [Docker](https://www.docker.com/)
 * [Swagger](http://swagger.io/),  [(swagger2-koa)](https://github.com/carlansley/swagger2-koa)
 * [Gulp](http://gulpjs.com/)
+* [Mocha](https://mochajs.org/), [Chai](https://github.com/chaijs/chai)
 
 ## Install
 ```
@@ -33,6 +34,11 @@ see API document on browser
 ```
 localhost:3000/docs
 ```
+## Tests
+```
+$ npm test
+```
+
 
 ## License
 [MIT](https://github.com/ctc316/ubike-service/blob/master/LICENSE)
